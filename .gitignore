@@ -1,0 +1,8 @@
+# ignore setting file
+*.setting
+
+# ignore classpath
+*.classpath
+
+# ignore project
+*.project
