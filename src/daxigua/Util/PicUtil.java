@@ -20,6 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 public class PicUtil {
 	public static List<BufferedImage> getPic(List<FileItem> list){
 		List<BufferedImage> imgList = new ArrayList<BufferedImage>();
+		System.out.println(list.size());
 		for (int i = 0; i < list.size(); i++) {
 			FileItem item = list.get(i);
 			try {
@@ -27,6 +28,8 @@ public class PicUtil {
 					InputStream input = item.getInputStream();
 					BufferedImage bi = ImageIO.read(input);
 					imgList.add(bi);
+					bi = null;
+					input = null;
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -37,9 +40,9 @@ public class PicUtil {
 		return imgList;
 	}
 	
-	public static BufferedImage makePic(List<BufferedImage> list){
+	public static void makePic(List<BufferedImage> list,String str,String name){
 		int width = 0,height = 0,
-			_width=0,_height = 0,__height,
+			_width=0,_height = 0,__height = 0,
 		pciNum = list.size();
 		int[] temp_hight = new int[pciNum];
 		List<int[]> imgRGB = new ArrayList<int[]>();
@@ -65,14 +68,26 @@ public class PicUtil {
 			//img.setRGB(0,_height, width, __height, imgRGB.get(i), 0, width);
 			img.setRGB(0,_height, width, __height, imgRGB.get(i), 0, width);
 		}
-		return img;
+		File f = new File(str+"/"+name);
+		if (!f.exists() && !f.isDirectory()) {
+			f.mkdir();
+		}
+		String dir = str+f.separator+name+f.separator+"abc.jpg";     
+        File file = new File(dir);     
+		try {
+			ImageIO.write(img, "jpg", file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//return img;
 	}
 	
-	public static List<String> divPic(BufferedImage bi,int rows,String path,String name){
+	public static List<String> divPic(String Str,int rows,String path,String name){
 		List<String> ls = new ArrayList<String>();
+		//System.out.println(Str);
 	        try {
-	           if(rows<=0||rows>20) 
-	        	   rows = 2; // 切片行数        
+	        	BufferedImage bi = ImageIO.read(new File(Str));
 	           int srcHeight = bi.getHeight(); // 源图宽度
 	           int srcWidth = bi.getWidth(); // 源图高度
 	           if (srcWidth > 0 && srcHeight > 0) {
@@ -82,11 +97,11 @@ public class PicUtil {
 	                //int destWidth = srcWidth; // 每张切片的宽度
 	                int destHeight = srcHeight; // 每张切片的高度
 	               // 计算切片的宽度和高度
-	               if (srcHeight % rows == 0) {
-	                    destHeight = srcHeight / rows;
-	                } else {
-	                    destHeight = (int) Math.floor(srcWidth / rows) + 1;
-	                }
+	               //if (srcHeight % rows == 0) {
+	                    destHeight = (int)(srcHeight / rows);
+	               // } else {
+	               //     destHeight = (int) Math.floor(srcWidth / rows) + 1;
+	               // }
 	                // 循环建立切片
 	               // 改进的想法:是否可用多线程加快切割速度
 	               for (int i = 0; i < rows; i++) {
@@ -108,11 +123,11 @@ public class PicUtil {
 								file.mkdir();
 							}
 	                        
-	                        String dir = path+"/"+name+"/cut_image_" + i + ".jpg";     
+	                        String dir = path+file.separator+name+file.separator+"cut_image_" + i + ".jpg";     
 	                        File f = new File(dir);     
 	                        ImageIO.write(tag, "JPEG", f);
 	                        //String str = "file:///"+dir;
-	                        String local = "/Upload/"+name+"/cut_image_" + i + ".jpg";
+	                        String local = "Upload"+file.separator+name+file.separator+"cut_image_" + i + ".jpg";
 	                    ls.add(local);
 	                }
 	            }

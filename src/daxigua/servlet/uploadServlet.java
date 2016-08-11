@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -24,6 +26,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import daxigua.Util.PicUtil;
+import daxigua.Util.ZipUtil;
 
 public class uploadServlet extends HttpServlet {
 
@@ -98,9 +101,24 @@ public class uploadServlet extends HttpServlet {
 			//获取图片流列表
 			List<BufferedImage> ls= PicUtil.getPic(list);
 			//拼接图片成完整一张
-			BufferedImage is = PicUtil.makePic(ls);
+			//BufferedImage is = PicUtil.makePic(ls);
+			PicUtil.makePic(ls,savepath,myname);
+			//BufferedImage tag = new BufferedImage(is.getWidth(),is.getHeight(), BufferedImage.TYPE_INT_RGB);
+			//ImageIO.write(tag, "jpg", savepath);
 			//将图片裁截成不同张
-			List<String> ls2 = PicUtil.divPic(is, 10,savepath,myname);
+			//BufferedImage is = ImageIO.read(PicUtil.makePic(ls,savepath,myname));
+			String str = savepath+File.separator+myname+File.separator+"abc.jpg";
+			List<String> ls2 = PicUtil.divPic(str, 35,savepath,myname);
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("MMddHHmmssSSSS");
+			String date = sdf.format(new Date());
+			System.out.println(date);
+			//压缩文件
+			
+			String uri = "Upload"+File.separator+myname+"_"+date+".zip";
+			boolean flag = ZipUtil.fileToZip(savepath+File.separator+myname, savepath, myname+"_"+date);
+			//传值过去
+			request.setAttribute("uri", uri);
 			request.setAttribute("imgList", ls2);
 			request.getRequestDispatcher("/beifen.jsp").forward(request, response);
 			

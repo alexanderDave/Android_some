@@ -10,13 +10,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
 	<title>image list</title>
 </head>
-<body>	
+<body><% String uri =  (String)request.getAttribute("uri");%>
+	<dir>为了减轻服务器的压力，请您拖动图片到本地实现下载功能，给您带来不便敬请原谅</dir><br>
+	<a href ="<%out.println(uri);%>">点击下载素材</a><br>
+	<hr>	
 	<%
 		List<String> list = (List<String>)request.getAttribute("imgList");
 		for(int i = 0; i < list.size();i++){
 			String str = list.get(i).toString();
 	 %>
-		<%=str %><a href="<%out.println(str);%>">下载</a>
+		<img style="width: 60%;" alt="waiting" src="<%= str%>"><br><hr>
 	<%} %>
 </body>
 </html>
